@@ -211,6 +211,18 @@ def launch_setup(context, *args, **kwargs):
         "warehouse_host": warehouse_sqlite_path,
     }
 
+    # --- OctoMap and Sensor Configuration (修正箇所) ---
+
+    # 1. Octomapの基本設定をPython辞書として直接定義
+    octomap_parameters = {
+        "octomap_frame": "world",
+        "octomap_resolution": 0.05,
+        "max_range": 2.0,
+    }
+
+    # 2. `sensors_3d.yaml` からセンサープラグイン設定のみを読み込み
+    sensors_config_yaml = load_yaml("ur_moveit_config", "config/sensors_3d.yaml")
+
     # Start the actual move_group node/action server
     move_group_node = Node(
         package="moveit_ros_move_group",
@@ -228,6 +240,9 @@ def launch_setup(context, *args, **kwargs):
             planning_scene_monitor_parameters,
             {"use_sim_time": use_sim_time},
             warehouse_ros_config,
+            # Octomap基本設定とセンサープラグイン設定を個別に渡す
+            octomap_parameters,
+            sensors_config_yaml,
         ],
     )
 
